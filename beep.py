@@ -269,7 +269,7 @@ def main():
 # read input and send the code
 #
    
-    data = sys.stdin.readlines()
+    data = sys.argv[1:]
     setup()
     t = 0.0
     chars = 0
