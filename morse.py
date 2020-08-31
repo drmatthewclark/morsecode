@@ -187,11 +187,11 @@ def pulse(duration):
 	sleep(dotLength + gauss(0, randomDeviation))
 
 def dot():
-	sys.stdout.write("dit ")
+	print("dit ")
 	pulse(dotLength)
 
 def dash():
-	sys.stdout.write("dah ")
+	print("dah ")
 	pulse(dashLength)
 
 def morseL():    # special for old morse L
