@@ -5,7 +5,7 @@ import wave
 import struct
 import math
 
-FREQ = 44100
+FREQ = 2000  # hi freq not required for this application
 PI = 3.141592653589793
 VOL = 32767
 
