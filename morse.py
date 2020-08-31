@@ -3,6 +3,7 @@ from random import gauss
 import RPi.GPIO as GPIO
 from time import sleep
 
+# global setup stuff
 
 # interval lengths in seconds
 # 80 - 15 wpm
@@ -27,7 +28,7 @@ gpioPin = 26
 # PARIS has 50 elements
 #
 wordsPerMinute = 60.0/(dotLength * 50.0)
-print 'telegraph rate is {0:.3f}'.format(wordsPerMinute), " words per minute"
+print( 'telegraph rate is {0:.3f}'.format(wordsPerMinute), " words per minute")
 
 endOfMessage = 'www.-.-.'  
 endOfTransmission = '.-.-.w'
@@ -44,6 +45,7 @@ Off = False
 # table to define dots and dashes 
 # this table is 1920 telegraph code used in mechanical telegraph
 # sounders, not modern international morse code.
+# https://en.wikipedia.org/wiki/Telegraph_code#Comparison_of_codes
 #
 # this variation has pauses within the letters
 #
@@ -100,7 +102,7 @@ def morse1920(x):
 
 #
 # table to define dots and dashes 
-# this is the modern international morse code
+# this is the modern international morse code from 1851
 # 
 # ITU recommendation ITU-R M.1677.1 (10/2009)
 # http://www.itu.int/dms_pubrec/itu-r/rec/m/R-REC-M.1677-1-200910-I!!PDF-E.pdf
@@ -188,30 +190,30 @@ def dash():
 	pulse(dashLength)
 
 def morseL():    # special for old morse L
-	sys.stdout.write("dahh ")
+	print("dahh ")
 	pulse(morseLLength)
 
 def morse0():   # special dash for old morse 0
-	sys.stdout.write("dahhh ")
+	print("dahhh ")
 	pulse(morse0Length)
 
 def midLetterPause():   # special mid-character pause for old morse
-	print"pause ",
+	print("pause ",)
 	sleep(pauseLength)
 
 def letterPause():  # pause between letters
-	print "\t\t-letter"
+	print("\t\t-letter")
 	sleep(letterPauseLength)
 
 def wordPause():  # pause between words
-	print "*-word space-*"
+	print("*-word space-*")
 	sleep(wordPauseLength)
 
 
 def space():
-	print "space"
+	print("space")
 	sleep(wordPauseLength)
-	print "space"
+	print("space")
 
 
 def sendCode(code):
@@ -231,24 +233,33 @@ def sendCode(code):
 		elif dahdit == 'l':
 			letterPause() # pause between letters
 		else:  # any other character, or an actual space
-			print "unexpected letter: ", dahdit
+			print("unexpected letter: ", dahdit)
 			space()
 	letterPause()
 
-# setup IO ports
-GPIO.setmode(GPIO.BOARD) ## Use board pin numbering
-GPIO.setup(gpioPin, GPIO.OUT)  ## Setup GPIO Pin to OUT
+# clean up
+def cleanup():
+  GPIO.output(gpioPin, GPIO.LOW)
+  GPIO.cleanup()
 
+# setup IO ports
+def setup():
+   GPIO.setmode(GPIO.BOARD) ## Use board pin numbering
+   GPIO.setup(gpioPin, GPIO.OUT)  ## Setup GPIO Pin to OUT
+
+
+def main():
 # read input and send the code
 #
-data = sys.stdin.readlines()
-
-for x in range(0, len(data)):
+   data = sys.stdin.readlines()
+   setup()
+   for x in range(0, len(data)):
 	dline = data[x].upper().rstrip()
 	for char in dline:	
-		print char," ",
+		print (char," ",)
 		morseCode = morse(char)
 		sendCode(morseCode)
+    cleanup()
 #
 # realistic end of message codes
 #
@@ -256,6 +267,4 @@ for x in range(0, len(data)):
 #sendCode(endOfTransmission)
 #sendCode(endOfWork)
 
-# clean up
-GPIO.output(gpioPin, GPIO.LOW)
-GPIO.cleanup()
+main()
