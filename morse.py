@@ -1,3 +1,5 @@
+#!/usr/bin/python
+
 import sys
 from random import gauss
 import RPi.GPIO as GPIO
@@ -11,7 +13,9 @@ from time import sleep
 # 50 - 24 wpm
 # 20 - 60 wpm  too fast for sounder
 
-dotLength = 50/1000.0     # 92 milliseconds
+wordsPerMinute = 20
+dotLength = 60.0/(wordsPerMinute * 50) # based on PARIS
+
 dashLength = 3 * dotLength
 pauseLength = dotLength           # used for pauses in letters for old telegraph codes, 1+1 = 2
 letterPauseLength = dotLength * 3 # pause between letters is 3 dots, but since
@@ -30,6 +34,7 @@ gpioPin = 26
 wordsPerMinute = 60.0/(dotLength * 50.0)
 print( 'telegraph rate is {0:.3f}'.format(wordsPerMinute), " words per minute")
 
+# standard messages
 endOfMessage = 'www.-.-.'  
 endOfTransmission = '.-.-.w'
 endOfWork = '...-.-'
@@ -251,6 +256,7 @@ def setup():
 def main():
 # read input and send the code
 #
+   
    data = sys.stdin.readlines()
    setup()
    for x in range(0, len(data)):
@@ -259,7 +265,7 @@ def main():
 		print (char," ",)
 		morseCode = morse(char)
 		sendCode(morseCode)
-    cleanup()
+   cleanup()
 #
 # realistic end of message codes
 #
