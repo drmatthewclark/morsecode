@@ -5,3 +5,5 @@ beep.py will create and play a sound file 'morse.wav' corresponding to text pipe
 e.g.  echo hello | beep.py
 
 The player is set to "mplayer" for linux but it can be modified for Windows.
+
+both telegraph and morse feature Gaussian randomness to make the code a little less than perfect.
