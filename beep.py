@@ -2,21 +2,19 @@
 
 import sys
 from random import gauss
-from time import sleep
-import makeWAV as wav
+import wave
+import struct
+import math
 import os
 # global setup stuff
-
-# interval lengths in seconds
-# 80 - 15 wpm
-# 60 - 20 wpm
-# 50 - 24 wpm
-# 20 - 60 wpm  too fast for sounder
 
 global wavefile
 wavefile = None
 
+# set speed
 wordsPerMinute = 20
+
+
 dotLength = 60.0/(wordsPerMinute * 41) # based on PARIS
 
 dashLength = 3 * dotLength
@@ -36,6 +34,11 @@ gpioPin = 26
 #
 print( 'telegraph rate is {0:.3f}'.format(wordsPerMinute), " words per minute")
 
+
+FREQ = 2000  # hi freq not required for this application
+PI = 3.141592653589793
+VOL = 32767
+
 # standard messages
 endOfMessage = 'www.-.-.'  
 endOfTransmission = '.-.-.w'
@@ -47,6 +50,22 @@ randomDeviation = dotLength * randomAmount
 
 On = True
 Off = False
+
+def makebeep(freq, length, vol, wavfile):
+
+    samples = int(FREQ * length)
+    coef = PI*freq/FREQ
+    for i in range(0, samples):
+        value = int(math.sin(i*coef)*vol)
+        packed_value = struct.pack('h', value)
+        wavfile.writeframes(packed_value)
+
+def openfile(fname):
+    noise_output = wave.open(fname, 'wb')
+    noise_output.setparams((1, 2, FREQ, 1, 'NONE', 'not compressed'))
+    return noise_output
+
+
 
 #
 # table to define dots and dashes 
@@ -186,14 +205,14 @@ def pulse(duration):
         freq = 1000
         vol = 32767
         duration += gauss(0, randomDeviation)
-        wav.makebeep(freq, duration, vol, wavefile)
-        wav.makebeep(freq, dotLength, 0, wavefile)
+        makebeep(freq, duration, vol, wavefile)
+        makebeep(freq, dotLength, 0, wavefile)
         return duration + dotLength
 
 def wait(duration):
         freq = 1000
         vol = 32767
-        wav.makebeep(freq, dotLength, 0, wavefile)  
+        makebeep(freq, dotLength, 0, wavefile)  
         return dotLength
         
 
@@ -262,7 +281,7 @@ def cleanup():
 # setup IO ports
 def setup():
     global wavefile
-    wavefile = wav.openfile('morse.wav')
+    wavefile = openfile('morse.wav')
 
 
 def main():
